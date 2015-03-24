@@ -1,6 +1,5 @@
 ---
-
-# Client-Side Unit Testing with Zuul and Tape
+# Client-Side Unit Testing with Tape and Zuul
 
 ### Amadeus Junqueira
 
@@ -192,7 +191,7 @@ module.exports = function myModule(xhr) {
 var test = require('tape');
 var module = require('./my-module');
 
-test('request completes', function(t){
+test('request completes', function(t) {
   module(mockXhr);
   function mockXhr(route, cb){
     t.ok('done' === cb('done'), 'should return results');
@@ -202,12 +201,14 @@ test('request completes', function(t){
 
 ```
 ---
+class: center, middle
 
 ## Throw your own errors
 
 aka catch programmer errors!  Your unit tests should cover this.
 
 
+---
 ```js
 var ok = require('assert').ok
 
@@ -218,14 +219,28 @@ module.exports = function someModule(opts) {
 
   opts.dao.get({ specific: 'data' }, opts.cb);
 }
-```
 
+// test.js
+var module = require('./some-module.js');
+var test = require('tape');
+
+test('some module arguments accepted', function(t) {
+  try { module(null); }
+  catch (e) { t.ok(true, 'opts') }
+
+  try { module({}); }
+  catch (e) { t.ok(true, '.dao') }
+
+  try { module({ dao: {} }); }
+  catch (e) { t.ok(true, '.cb') }
+});
+```
 ---
 class: center, middle
-## Event handling
+# Event handling
 
-####- Move application logic from event handlers
-####- Don't pass the event object around!
+###- Move application logic from event handlers
+###- Don't pass the event object around!
 ---
 
 ```js
@@ -253,7 +268,7 @@ var popup = document.createElemnt('div');
 popup.id = 'popup';
 document.body.appendChild(popup);
 
-test('show popup should add correct styles',function() {
+test('show popup should add correct styles', function(t) {
   app.showPopup(12, 24);
   t.ok(popup.style.left === 12, 'left');
   t.ok(popup.style.top === 24, 'top');
@@ -263,11 +278,13 @@ test('show popup should add correct styles',function() {
 
 ###### Extended from `Maintainable Javascript` by Zakas
 ---
+class: center, middle
+## Testing Events with dom-events
 
-### Testing Events with dom-events
-
+`dom-events` is a cool library!
+---
 ```js
-function component() {
+module.exports = function component() {
   var el = document.createElement('a');
   a.href = '#';
   el.classList.add('active');
@@ -279,6 +296,8 @@ function component() {
   return el;
 }
 
+// test.js
+var component = require('./component');
 var test = require('tape');
 var dom = require('dom-events');
 
@@ -401,6 +420,14 @@ module.exports = function getFilteredList(lists, state) {
 
 ```
 ---
+class: center, middle
+
+# A Node-centric testing workflow
+aka almost done yall!
+<p class="img-cont">
+<img src="http://media3.giphy.com/media/TNQHoWzmW8h9K/200.gif" />
+</p>
+---
 ## The possibilities are endless. Unix pipe ftw
 
 ```bash
@@ -427,15 +454,6 @@ ok 1 should be equal
   if (err) deadCode();
            ^^^^^^^^^^^
 ```
----
-class: center, middle
-
-# A Node-centric testing workflow
-aka almost done yall!
-<p class="img-cont">
-<img src="http://media3.giphy.com/media/TNQHoWzmW8h9K/200.gif" />
-</p>
-
 ---
 # Zuul
 
