@@ -82,15 +82,15 @@ class: middle, center
 </p>
 
 ---
-class: center, middle
-
-# A Node-centric testing workflow
-### Borne of years of frustration
-
+class: middle, center
+# Need a framework?
+<p class="img-cont">
+<img width="500" src="http://media4.giphy.com/media/ibOEGsIGd3jtS/200.gif" />
+</p>
 ---
 # Tape by substack
 
-A tap-producing test harness for node and browsers. TAP is a standard for test output.
+A tap-producing test harness for node and browsers. TAP (test anything protocol) is a standard for test output.
 
 ###- TAP allows for the dead simple integration of many consumers
 ###- Keeps testing simple
@@ -170,10 +170,14 @@ class: middle, center
 ### Basic advice from a former testing-n00b
 
 ---
+class: center, middle
 
-### Mock your ajax tests
+## Mock your ajax tests
 
 It's often a good idea to pass in external dependencies
+
+---
+Mock your ajax tests
 
 ```js
 // Don't
@@ -194,9 +198,11 @@ module.exports = function myModule(xhr) {
 };
 
 // some-test.js
-var mod = require('./my-module');
+var test = require('tape');
+var module = require('./my-module');
+
 test('request completes', function(t){
-  mod(mockXhr);
+  module(mockXhr);
   function mockXhr(route, cb){
     t.ok('done' === cb('done'), 'should return results');
     t.end();
@@ -224,14 +230,15 @@ module.exports = function someModule(opts) {
 ```
 
 ---
-
+class: center, middle
 ## Event handling
 
-###- Move application logic from event handlers
-###- Don't pass the event object around!
+####- Move application logic from event handlers
+####- Don't pass the event object around!
+---
 
 ```js
-var MyApplication = {
+module.exports = MyApp = {
   handleClick: function(event) {
     this.showPopup(event.clientX, event.clientY);
   },
@@ -244,13 +251,94 @@ var MyApplication = {
 };
 
 addListener(element, 'click', function(event) {
-  MyApplication.handleClick(event); // this is okay
+  MyApp.handleClick(event); // this is okay
+});
+```
+```js
+// test.js
+var app = require('./app')
+var test = require('tape');
+var popup = document.createElemnt('div');
+popup.id = 'popup';
+document.body.appendChild(popup);
+
+test('show popup should add correct styles',function() {
+  app.showPopup(12, 24);
+  t.ok(popup.style.left === 12, 'left');
+  t.ok(popup.style.top === 24, 'top');
+  t.ok(popup.classList.contains('reveal'), 'classname');
 });
 ```
 
-###### From `Maintainable Javascript` by Zakas
+###### Extended from `Maintainable Javascript` by Zakas
 ---
 
+### Testing Events with dom-events
+
+```js
+function component() {
+  var el = document.createElement('a');
+  a.href = '#';
+  el.classList.add('active');
+  addListener(el, 'click', function(e){
+    e.preventDefault();
+    toggle()
+  })
+  function toggle() { el.classList.toggle('active') }
+  return el;
+}
+
+var test = require('tape');
+var dom = require('dom-events');
+
+test('component should toggle class when clicked', function(t){
+  t.plan(1);
+  var el = component();
+  dom.emit(el, 'click')
+  ok(!ok.classList.contains('active'), 'no active class after click');
+})
+```
+---
+class: center, middle
+
+# Keep it functional!
+
+Input, output, test, repeat.
+
+---
+Keep it functional!
+```js
+// Don't.
+module.exports = {
+  lyric: 'hey',
+  getLyric: function getLyric() {
+    return this.thaHook();
+  },
+  thaHook: function thaHook() {
+    return this.lyric + ' ya!';
+  }
+}
+
+//Do
+module.exports = {
+  lyric: 'hey',
+  getLyric: function getLyric() {
+    return this.thaHook(this.lyric);
+  },
+  thaHook: function thaHook(lyric) {
+    return lyric + ' ya!';
+  }
+}
+
+// test.js
+var lyric = require('./lyric');
+var test = require('tape');
+test('tha hook should be a multinational megahit', function(t) {
+  t.ok(lyric.thaHook('hell') === 'hell ya!', 'still probably a hit');
+})
+
+```
+---
 # Testability with module systems
 
 <p class="img-cont">
@@ -322,32 +410,6 @@ module.exports = function getFilteredList(lists, state) {
 
 ```
 ---
-### Testing Events with dom-events
-
-```js
-function component() {
-  var el = document.createElement('a');
-  a.href = '#';
-  el.classList.add('active');
-  addListener(el, 'click', function(e){
-    e.preventDefault();
-    toggle()
-  })
-  function toggle() { el.classList.toggle('active') }
-  return el;
-}
-
-var test = require('tape');
-var dom = require('dom-events');
-
-test('component should toggle class when clicked', function(t){
-  t.plan(1);
-  var el = component();
-  dom.emit(el, 'click')
-  ok(!ok.classList.contains('active'), 'no active class after click');
-})
-```
----
 ## The possibilities are endless. Unix pipe ftw
 
 ```bash
@@ -374,6 +436,15 @@ ok 1 should be equal
   if (err) deadCode();
            ^^^^^^^^^^^
 ```
+---
+class: center, middle
+
+# A Node-centric testing workflow
+aka almost done yall!
+<p class="img-cont">
+<img src="http://media3.giphy.com/media/TNQHoWzmW8h9K/200.gif" />
+</p>
+
 ---
 # Zuul
 
@@ -425,14 +496,9 @@ sauce_key: sauce_key
 </p>
 
 ---
-class: middle, center
 # Putting it all together with npm!
-aka almost done yall!
-<p class="img-cont">
-<img src="http://media3.giphy.com/media/TNQHoWzmW8h9K/200.gif" />
-</p>
----
-# A _super chill_ npm workflow
+
+A _super chill_ npm workflow
 package.json
 ```json
 {
