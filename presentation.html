@@ -203,7 +203,7 @@ var module = require('./my-module');
 test('request completes', function(t) {
   module(mockXhr);
   function mockXhr(route, cb){
-    t.ok('done' === cb('done'), 'should return results');
+    t.ok('done' === cb(null, 'done'), 'should return results');
     t.end();
   }
 })
